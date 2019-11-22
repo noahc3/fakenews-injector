@@ -107,24 +107,46 @@ int main(int argc, char **argv)
         }
 
         if (R_SUCCEEDED(rc)) {
-            printf("    ROMFS initialized\n");
-            printf("\nCopying fakenews save data\n");
+            printf("    ROMFS initialized\n\n");
 
-            rc = copyFile(srcFile, destFile);
-            
-            if (R_FAILED(rc)) {
-                printf("    Failed to copy file: 0x%08x", rc);
+            printf("Press + to install Fake News, press - to remove Fake News.\n");
+
+            while(appletMainLoop())
+            {
+                //Scan all the inputs. This should be done once for each frame
+                hidScanInput();
+
+                //hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
+                u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+
+                if (kDown & KEY_PLUS) {
+                    printf("\nCopying fakenews save data\n");
+                    rc = copyFile(srcFile, destFile);
+                    if (R_FAILED(rc)) {
+                        printf("    Failed to copy file: 0x%08x", rc);
+                    }
+                    break;
+                } else if (kDown & KEY_MINUS) {
+                    printf("\nRemoving fakenews save data\n");
+                    rc = remove(destFile);
+                    if (R_FAILED(rc)) {
+                        printf("    Failed to delete file: 0x%08x", rc);
+                    }
+                    fsdevCommitDevice("save");
+                    break;
+                }
+
+                consoleUpdate(NULL);
             }
+            
 
             if (R_SUCCEEDED(rc)) {
                 printf("    Done!\n");
-
                 printf("\nClosing save file\n");
 
                 fsdevUnmountDevice("save");
 
                 printf("    Done!\n");
-
                 printf("\n\nDone!\n\n");
             }
         }
