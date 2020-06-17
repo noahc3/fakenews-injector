@@ -72,12 +72,15 @@ int main(int argc, char **argv)
 
 
     printf("\nKilling BCAT\n");
+    
+    AccountUid auid = {};
+    
 
     for (int attempt = 0; attempt < 100; attempt++)
     {
-        pmshellTerminateProcessByTitleId(processID);
+        pmshellTerminateProgram(processID);
 
-        if (R_SUCCEEDED(rc = fsMount_SystemSaveData(&tmpfs, saveID)))
+        if (R_SUCCEEDED(rc = fsOpen_SystemSaveData(&tmpfs, 0, saveID, auid)))
         {
             printf("    BCAT is dead\n");
             break;
