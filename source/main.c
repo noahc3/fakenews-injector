@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
     puts("Fake News Injector\n\n");
 
-    rc = newsInitialize(NewsServiceType_Application);
+    rc = newsInitialize(NewsServiceType_Administrator);
 
     puts("Press + to install Fake News, press - to restore real News, B to exit\n");
 
